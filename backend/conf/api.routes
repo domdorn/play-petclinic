@@ -1,0 +1,19 @@
+GET         /owners                     api.owners.getAllOwners.GetAllOwnersController.getOwners()
+POST        /owners                     api.owners.createOwner.CreateOwnerController.createOwner()
+GET         /owners/:ownerId            api.owners.getOwnerDetail.GetOwnerDetailController.getOwner(ownerId)
+
+POST        /owners/:ownerId/pets       api.pets.addPet.AddPetController.addPet(ownerId)
+
+GET         /pets/:ownerId/:petId       api.pets.getPetDetail.GetPetDetailController.getPet(ownerId, petId)
+PUT         /pets/:ownerId/:petId       api.pets.updatePetDetail.UpdatePetDetailController.updatePetDetails(ownerId, petId)
+
+GET         /pettypes                   api.pettype.PetTypeController.getAllPetTypes()
+POST        /pettypes                   api.pettype.PetTypeController.addPetType()
+GET         /pettypes/:id               api.pettype.PetTypeController.getPetType(id)
+DELETE      /pettypes/:id               api.pettype.PetTypeController.deletePetType(id)
+PUT         /pettypes/:id               api.pettype.PetTypeController.changePetTypeName(id)
+
+
+GET         /testdata/pettyes    api.controllers.InsertTestDataController.insertPetTypes()
+GET         /testdata/owners     api.controllers.InsertTestDataController.insertOwners()
+GET         /testdata/pets       api.controllers.InsertTestDataController.insertPets()

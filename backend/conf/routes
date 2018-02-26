@@ -1,0 +1,4 @@
+GET     /                           controllers.HomeController.index
+->      /petclinic/api                        api.Routes
+
+->     /v1/posts                    posts.Routes
