@@ -48,7 +48,7 @@ export class PetListComponent implements OnInit {
   }
 
   editPet(pet: Pet) {
-    this.router.navigate(['/pets', pet.id, pet.owner.id, 'edit']);
+    this.router.navigate(['/pets', pet.owner.id, pet.id, 'edit']);
   }
 
   deletePet(pet: Pet) {
@@ -64,7 +64,7 @@ export class PetListComponent implements OnInit {
   }
 
   addVisit(pet: Pet) {
-    this.router.navigate(['/pets', pet.id, 'visits', 'add']);
+    this.router.navigate(['/pets', pet.owner.id, pet.id, 'visits', 'add']);
   }
 
 }

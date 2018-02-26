@@ -240,9 +240,13 @@ class Owner(uuid: String) extends PersistentActor {
     case GetOwnerDetailsQuery(id) if id == uuid => sender() ! GetOwnerDetailsResponse(uuid, state.firstName, state.lastName, state.address, state.city, state.telephone, state.pets)
     case GetOwnerDetailsQuery(id)               => Failure(new IllegalArgumentException("should not have received this id"))
 
-    case GetPetDetailsQuery(ownerId, petId)     => state.pets.find(_.id == petId) match {
-      case Some(pet) => sender() ! PetDetailsResponse(ownerId: String, state.firstName, state.lastName, pet.id, pet.name, pet.birthDay, pet.`type`)
-      case None => sender() ! PetNotFoundGetPetDetailsresponse
+    case x@GetPetDetailsQuery(ownerId, petId)     => {
+      println("GetPetDetailsQuery: " + x)
+
+      state.pets.find(_.id == petId) match {
+        case Some(pet) => sender() ! PetDetailsResponse(ownerId: String, state.firstName, state.lastName, pet.id, pet.name, pet.birthDay, pet.`type`)
+        case None => sender() ! PetNotFoundGetPetDetailsresponse
+      }
     }
 
   }

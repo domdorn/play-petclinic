@@ -56,7 +56,8 @@ export class VisitAddComponent implements OnInit {
   ngOnInit() {
     console.log(this.route.parent);
     const petId = this.route.snapshot.params['id'];
-    this.petService.getPetById(petId).subscribe(
+    const ownerId = this.route.snapshot.params['ownerId'];
+    this.petService.getPetById(petId, ownerId).subscribe(
       response => {
         this.current_pet = response;
         this.visit.pet = this.current_pet;

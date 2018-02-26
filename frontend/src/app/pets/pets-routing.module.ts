@@ -32,7 +32,7 @@ const petRoutes: Routes = [
   {path: 'pets', component: PetListComponent},
   {path: 'pets/add', component: PetAddComponent},
   {
-    path: 'pets/:id/:ownerId',
+    path: 'pets/:ownerId/:id',
     children: [
       {
         path: 'edit',
