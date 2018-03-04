@@ -1,0 +1,6 @@
+
+GET    /                     petclinic.v1.post.PostController.list
+POST   /                     petclinic.v1.post.PostController.create
+
+GET    /:id                 petclinic.v1.post.PostController.show(id)
+PUT    /:id                 petclinic.v1.post.PostController.update(id)

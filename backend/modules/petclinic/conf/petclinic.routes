@@ -1,0 +1,3 @@
+GET     /                           petclinic.controllers.HomeController.index
+->      /petclinic/                 petclinic.api.Routes
+->     /v1/posts                    petclinic.posts.Routes

@@ -8,9 +8,9 @@ import play.libs.Json;
 import play.mvc.Http;
 import play.mvc.Result;
 import play.test.WithApplication;
-import v1.post.PostData;
-import v1.post.PostRepository;
-import v1.post.PostResource;
+import petclinic.v1.post.PostData;
+import petclinic.v1.post.PostRepository;
+import petclinic.v1.post.PostResource;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
