@@ -104,6 +104,7 @@ lazy val commonSettings = Seq(
   , libraryDependencies += "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.8.8"
   // akka persistence
   , libraryDependencies += "com.typesafe.akka" %% "akka-persistence" % "2.5.10"
+  , libraryDependencies += "com.typesafe.akka" %% "akka-typed" % "2.5.5"
 
   // query the journal
   , libraryDependencies += "com.typesafe.akka" %% "akka-persistence-query" % "2.5.10"
