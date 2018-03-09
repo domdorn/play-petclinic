@@ -1,16 +1,12 @@
 package petclinic.api.pets.updatePetDetail
 
-import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 import petclinic.api.model._
-import play.api.libs.json._
 import play.api.mvc._
 
-import scala.compat.java8.FutureConverters._
-import scala.compat.java8.OptionConverters._
 import scala.util.{Failure, Success, Try}
 
 
@@ -44,13 +40,11 @@ object UpdatePetDetailsApiJsonRequest extends PetTypeJsonSupport {
 class UpdatePetDetailController @Inject()(service: UpdatePetDetailService, cc: ControllerComponents) extends AbstractController(cc) with PetTypeJsonSupport {
   implicit val ec = cc.executionContext
 
-  def updatePetDetails(ownerId: String, petId: String): Action[UpdatePetDetailsApiJsonRequest] = cc.actionBuilder(cc.parsers.json[UpdatePetDetailsApiJsonRequest]).async { req =>
+  def update(ownerId: String, petId: String): Action[UpdatePetDetailsApiJsonRequest] = cc.actionBuilder(cc.parsers.json[UpdatePetDetailsApiJsonRequest]).async { req =>
     val payload = req.body
 
     service
       .updatePetDetails(OwnerId(ownerId), petId, payload.name, payload.birthDate, payload.`type`.getId)
-      .toScala
-      .map(_.asScala)
       .map {
       case None => BadRequest("owner or pet not found")
       case Some(update) => NoContent

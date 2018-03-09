@@ -21,10 +21,11 @@
  */
 
 import {Injectable} from '@angular/core';
-import {environment} from '../../environments/environment';
-import {Http, Response} from '@angular/http';
-import {Observable} from 'rxjs';
+import {Http, Response, Headers, RequestOptions} from '@angular/http';
 import {Vet} from './vet';
+import {Observable} from 'rxjs';
+import {environment} from '../../environments/environment';
+
 
 @Injectable()
 export class VetService {
@@ -39,6 +40,32 @@ export class VetService {
       .map((response: Response) => <Vet[]> response.json())
       .catch(this.handleError);
   }
+
+  private getVetById(vet_id: string): Observable<Vet> {
+    return this._http.get((this.entity_url + "/" + vet_id))
+      .map((response: Response) => <Vet> response.json())
+      .catch(this.handleError)
+  }
+
+  addVet(vet: Vet): Observable<Vet> {
+    const headers = new Headers();
+    headers.append('Content-Type', 'application/json');
+    headers.append('Accept', 'application/json');
+    return this._http.post(this.entity_url, JSON.stringify(vet), {headers})
+      .map((response: Response) => <Vet> response.json())
+      .catch(this.handleError);
+  }
+
+  updateVet(vet_id: string, vet: Vet): Observable<Vet> {
+    const body = JSON.stringify(vet);
+    const headers = new Headers({'Content-Type': 'application/json;charset=UTF-8'});
+    const options = new RequestOptions({headers: headers});
+    return this._http.put((this.entity_url + "/" + vet_id), body, options)
+      .map((response: Response) => response)
+      .catch(this.handleError);
+  }
+
+
 
   private handleError(error: Response | any) {
     console.log('handleError log: ');
@@ -58,5 +85,6 @@ export class VetService {
     console.error(errMsg);
     return Observable.throw(errMsg);
   }
+
 
 }

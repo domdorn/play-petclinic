@@ -12,30 +12,27 @@ import scala.compat.java8.OptionConverters._
 class ChangePetTypeNameController @Inject()(petTypeService: ChangePetTypeNameService, cc: ControllerComponents) extends AbstractController(cc) with PetTypeJsonSupport {
   implicit val ec = cc.executionContext
 
-  def changePetTypeName(id: String) = cc.actionBuilder.async(cc.parsers.json) { req =>
+  def change(id: String) = cc.actionBuilder.async(cc.parsers.json) { req =>
 
     val petType = req.body.as[PetType]
-    petTypeService.changeName(id, petType.getName).toScala.map(_.asScala).map {
+    petTypeService.changeName(id, petType.getName).map {
       case Some(pt) => Results.NoContent
       case None => Results.BadRequest
     }.recover {
-      case x: IllegalArgumentException => {
+      case x: IllegalArgumentException =>
         val errorData = Seq(
           "status" -> "400",
           "statusText" -> "bad request",
           "message" -> "name in use or invalid"
         ).toMap
         Results.BadRequest(Json.toJson(errorData))
-
-      }
-      case x => {
+      case x =>
         val errorData: Map[String, String] = Seq(
           "status" -> "500",
           "statusText" -> "internal server error happened",
           "message" -> "an error occured"
         ).toMap
         Results.InternalServerError(Json.toJson(errorData))
-      }
     }
 
   }

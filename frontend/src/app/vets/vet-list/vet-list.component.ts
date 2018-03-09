@@ -23,6 +23,7 @@
 import {Component, OnInit} from '@angular/core';
 import {Vet} from '../vet';
 import {VetService} from '../vet.service';
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-vet-list',
@@ -32,9 +33,11 @@ import {VetService} from '../vet.service';
 export class VetListComponent implements OnInit {
   vets: Vet[];
   errorMessage: string;
+  router: Router;
 
-  constructor(private vetService: VetService) {
+  constructor(private vetService: VetService, private routerr: Router) {
     this.vets = [];
+    this.router = routerr;
   }
 
   ngOnInit() {
@@ -44,11 +47,11 @@ export class VetListComponent implements OnInit {
   }
 
   gotoHome() {
-    // TODO not completed
+    this.router.navigate(['/'])
   }
 
   addVet() {
-    // TODO not completed
+    this.router.navigate(['/vets', 'add']);
   }
 
 }

@@ -24,9 +24,9 @@ object PetTypeProtocol {
   // use case 2: get all pet types
   def getAll(): GetAllQuery.type = GetAllQuery
   case object GetAllQuery extends Query
-  case class GetAllResponse(types: Seq[GetAllPetType]) extends Response
+  case class GetAllResponse(types: Seq[GetAllPetTypeResponseContainer]) extends Response
 
-  case class GetAllPetType(id: String, name: String)
+  case class GetAllPetTypeResponseContainer(id: String, name: String)
 
 
   // use case 3: get a single pet type:
@@ -120,7 +120,7 @@ class PetTypeEntity extends PersistentActor {
       }
     }
 
-    case GetAllQuery => sender() ! GetAllResponse(petTypes.keySet.map(pt => GetAllPetType(pt.id, pt.name)).toSeq)
+    case GetAllQuery => sender() ! GetAllResponse(petTypes.keySet.map(pt => GetAllPetTypeResponseContainer(pt.id, pt.name)).toSeq)
 
     case GetQuery(id) => petTypes.keySet.find(_.id == id) match {
       case Some(pet) => sender() ! FoundGetQueryResponse(pet.id, pet.name)

@@ -10,8 +10,8 @@ import scala.compat.java8.FutureConverters._
 class GetOwnerDetailController @Inject()(service: GetOwnerDetailService, cc: ControllerComponents) extends AbstractController(cc) with JsonSupport {
   implicit val ec = cc.executionContext
 
-  def getOwner(ownerId: String) = cc.actionBuilder.async { request =>
-    service.getOwner(ownerId).toScala.map(o => Results.Ok(Json.toJson(o)))
+  def get(ownerId: String) = cc.actionBuilder.async { request =>
+    service.getOwner(ownerId).map(o => Results.Ok(Json.toJson(o)))
   }
 
 }

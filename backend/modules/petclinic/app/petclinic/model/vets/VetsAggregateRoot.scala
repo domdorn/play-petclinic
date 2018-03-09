@@ -2,95 +2,82 @@ package petclinic.model.vets
 
 import java.util.UUID
 
+import akka.actor.{ActorRef, Props, Terminated}
 import akka.persistence.PersistentActor
 import petclinic.model.vets.Protocol._
-import petclinic.model.vets.VetEvents.{SpecialtyAddedEvent, SpecialtyRemovedEvent, VetCreatedEvent}
 
 
 object VetsAggregateRoot {
 
-  sealed trait Event
+  object Events {
 
-  case class VetCreatedEvent(id: String, name: String) extends Event
+    sealed trait Event
 
-  case class VetDeletedEvent(id: String) extends Event
+    case class VetCreatedEvent(id: String, firstName: String, lastName: String, specialties: Seq[String]) extends Event
+
+    case class VetDeletedEvent(id: String) extends Event
+
+  }
+
+  case class VetAggregateStateData(id: String, firstName: String, lastName: String, specialties: Seq[String] = Nil)
 
 }
 
 class VetsAggregateRoot extends PersistentActor {
 
+  import VetsAggregateRoot.Events._
   import VetsAggregateRoot._
 
   override def persistenceId: String = "vets-aggregate"
 
-  case class Vet(id: String, name: String,
-                 telephone: String, address: String,
-                 specialties: Seq[String]
-                )
+  var vets: Vector[VetAggregateStateData] = Vector.empty // what If I have 1.000.000 vets?!
 
-  var vets: Seq[Vet] = Seq() // what If I have 1.000.000 vets?!
-
+  var aggregationActor: Option[ActorRef] = None
 
   override def receiveRecover: Receive = {
     case x: Event => x match {
-      case VetCreatedEvent(id, name) => vets = vets ++ Seq(Vet(id, name))
-      case VetDeletedEvent(id) => vets = vets.filterNot(_.id == id)
+      case VetsAggregateRoot.Events.VetCreatedEvent(id, firstName, lastName, specialties) => vets = vets ++ Seq(VetAggregateStateData(id, firstName, lastName, specialties))
+      case VetsAggregateRoot.Events.VetDeletedEvent(id) => vets = vets.filterNot(_.id == id)
     }
   }
 
   override def receiveCommand: Receive = {
     case x: Command => handleCommands(x)
     case x: Query => handleQueries(x)
+    case Terminated(ref) => aggregationActor.map(_ == ref).foreach(bool => if(bool){
+      aggregationActor = None
+    })
   }
 
   def handleCommands = (x: Command) => x match {
-    case CreateVetCommand(name) => vets.find(_.name == name) match {
+    case cmd@CreateVetCommand(firstName, lastName, specialties) => vets.find(v => v.firstName == firstName && v.lastName == lastName) match {
       case Some(value) => sender() ! VetCouldNotBeCreatedResponse
-      case None => persist(VetCreatedEvent(UUID.randomUUID().toString, name)) { ev =>
+      case None => persist(
+        VetsAggregateRoot.Events.VetCreatedEvent(UUID.randomUUID().toString, firstName, lastName, specialties)
+      ) { ev =>
+        println("persisted event")
         receiveRecover.apply(ev)
-        sender() ! VetCreatedResponse(ev.id)
-      }
+        println("telling child")
+        getOrCreateChild(ev.id).forward(cmd)
+        }
     }
     case UpdateVetCommand(id, name) =>
   }
 
   def handleQueries = (x: Query) => x match {
-    case GetAllVets =>
+    case GetAllVets => {
+      if (aggregationActor.isEmpty) { // lazy initialize
+        val ref = context.actorOf(Props(new InMemoryVetsAggregationActor()))
+        context.watch(ref)
+        aggregationActor = Some(ref)
+      }
+      aggregationActor.foreach(_.forward(GetAllVets))
+    }
     case GetVetDetailsQuery(id) =>
   }
 
+  def getOrCreateChild(id: String): ActorRef = context.child(id).getOrElse(context.actorOf(Vet.props(id), id))
 }
 
-  object VetEvents {
-    sealed trait Event
-    case class VetCreatedEvent(id: String, firstName: String, lastName: String, address: String, telephone: String) extends Event
-    case class SpecialtyAddedEvent(specialtyId: String) extends Event
-    case class SpecialtyRemovedEvent(specialtyId: String) extends Event
-  }
-
-  class Vet(id: String) extends PersistentActor {
-    override def persistenceId: String = s"vet-$id"
-
-    case class VetData(
-                        firstName: String, lastName: String,
-                        telephone: String, address: String,
-                        specialties: Seq[String]
-                      )
-
-    var state: Option[VetData] = None
-
-    override def receiveRecover: Receive = {
-      case x: VetEvents.Event => x match {
-        case VetCreatedEvent(_, firstName, lastName, address, telephone) => state = Some(VetData(
-          firstName, lastName, telephone, address, Nil))
-        case SpecialtyAddedEvent(specialtyId) => state = state
-          .map(s => s.copy(specialties = s.specialties ++ Seq(specialtyId)))
-        case SpecialtyRemovedEvent(specialtyId) => state = state
-          .map(s => s.copy(specialties = s.specialties.filterNot(_ == specialtyId)))
-      }
-    }
-
-    override def receiveCommand: Receive = ???
-  }
 
 

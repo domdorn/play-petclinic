@@ -13,9 +13,9 @@ class GetPetTypeController @Inject()(petTypeService: GetPetTypeService, cc: Cont
   implicit val ec = cc.executionContext
 
 
-  def getPetType(id: String) = cc.actionBuilder.async {
+  def get(id: String) = cc.actionBuilder.async {
     req =>
-      petTypeService.getPetType(id).toScala.map(_.asScala).map {
+      petTypeService.getPetType(id).map {
         case Some(pt) => Results.Ok(Json.toJson(pt))
         case None => Results.NotFound
       }

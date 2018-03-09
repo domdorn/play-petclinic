@@ -1,4 +1,4 @@
-package petclinic.api.owners.createOwner
+package petclinic.api.owners.addOwner
 
 import play.api.libs.json.Json
 

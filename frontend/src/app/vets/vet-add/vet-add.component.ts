@@ -21,6 +21,9 @@
  */
 
 import {Component, OnInit} from '@angular/core';
+import {VetService} from '../vet.service';
+import {Vet} from '../vet';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-vet-add',
@@ -29,10 +32,29 @@ import {Component, OnInit} from '@angular/core';
 })
 export class VetAddComponent implements OnInit {
 
-  constructor() {
+  vet: Vet;
+  errorMessage: string;
+
+  constructor(private vetService: VetService, private router: Router) {
+    this.vet = <Vet>{};
   }
 
   ngOnInit() {
+  }
+
+  onSubmit(vet: Vet) {
+    vet.id = null;
+    this.vetService.addVet(vet).subscribe(
+      new_vet => {
+        this.vet = new_vet;
+        this.gotoVetsList();
+      },
+      error => this.errorMessage = <any>error
+    );
+  }
+
+  gotoVetsList() {
+    this.router.navigate(['/vets']);
   }
 
 }

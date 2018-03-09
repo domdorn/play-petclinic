@@ -8,14 +8,14 @@ object Protocol {
 
   // use case 1: get all vets
   case object GetAllVets extends Query
-  case class BasicVet(id: String, name: String)
+  case class BasicVet(id: String, fistName: String, lastName: String)
   case class GetAllVetsReponse(vets: Seq[BasicVet]) extends Response
 
 
   // use case 2: create a vet
-  case class CreateVetCommand(name: String) extends Command
+  case class CreateVetCommand(firstname: String, lastName: String, specialties: Seq[String]) extends Command
   sealed trait CreateVetResponse extends Response
-  case class VetCreatedResponse(id: String) extends CreateVetResponse
+  case class VetCreatedResponse(id: String, firstName: String, lastName: String, specialties: Seq[String]) extends CreateVetResponse
   case object VetCouldNotBeCreatedResponse extends CreateVetResponse
 
   // use case 3: update a vet

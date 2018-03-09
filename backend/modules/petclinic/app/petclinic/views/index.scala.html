@@ -32,13 +32,24 @@
     <code>http POST localhost:9000/v1/posts title="Some title" body="Some Body"</code>
 </pre>
 
+      <h2>Testdata</h2>
       <p>
           To insert testdata, do
       </p>
       <pre>
-          <code>http GET <a href="@petclinic.api.controllers.routes.InsertTestDataController.insertPetTypes().absoluteURL()" target="_blank">@petclinic.api.controllers.routes.InsertTestDataController.insertPetTypes().absoluteURL()</a></code>
-          <code>http GET <a href="@petclinic.api.controllers.routes.InsertTestDataController.insertOwners().absoluteURL()" target="_blank">@petclinic.api.controllers.routes.InsertTestDataController.insertOwners().absoluteURL()</a></code>
-          <code>http GET <a href="@petclinic.api.controllers.routes.InsertTestDataController.insertPets().absoluteURL()" target="_blank">@petclinic.api.controllers.routes.InsertTestDataController.insertPets().absoluteURL()</a></code>
+          <code>http GET <a href="@petclinic.testdata.routes.InsertTestDataController.insertPetTypes().absoluteURL()" target="_blank">@petclinic.testdata.routes.InsertTestDataController.insertPetTypes().absoluteURL()</a></code>
+          <code>http GET <a href="@petclinic.testdata.routes.InsertTestDataController.insertOwners().absoluteURL()" target="_blank">@petclinic.testdata.routes.InsertTestDataController.insertOwners().absoluteURL()</a></code>
+          <code>http GET <a href="@petclinic.testdata.routes.InsertTestDataController.insertPets().absoluteURL()" target="_blank">@petclinic.testdata.routes.InsertTestDataController.insertPets().absoluteURL()</a></code>
+          <code>http GET <a href="@petclinic.testdata.routes.InsertTestDataController.insertSpecialties().absoluteURL()" target="_blank">@petclinic.testdata.routes.InsertTestDataController.insertSpecialties().absoluteURL()</a></code>
+
+      </pre>
+
+      <h2>View Data</h2>
+      <pre>
+          <code>http GET <a href="@petclinic.api.owners.getAllOwners.routes.GetAllOwnersController.getOwners().absoluteURL()" target="_blank">@petclinic.api.owners.getAllOwners.routes.GetAllOwnersController.getOwners().absoluteURL()</a></code>
+          <code>http GET <a href="@petclinic.api.pettype.getAllPetTypes.routes.GetAllPetTypesController.getAll().absoluteURL()" target="_blank">@petclinic.api.pettype.getAllPetTypes.routes.GetAllPetTypesController.getAll().absoluteURL()</a></code>
+          <code>http GET <a href="@petclinic.api.specialty.getAllSpecialties.routes.GetAllSpecialtiesController.getAll().absoluteURL()" target="_blank">@petclinic.api.specialty.getAllSpecialties.routes.GetAllSpecialtiesController.getAll().absoluteURL()</a></code>
+          <code>http GET <a href="@petclinic.api.vets.getAllVets.routes.GetAllVetsController.getAll().absoluteURL()" target="_blank">@petclinic.api.vets.getAllVets.routes.GetAllVetsController.getAll().absoluteURL()</a></code>
       </pre>
 
 <p>

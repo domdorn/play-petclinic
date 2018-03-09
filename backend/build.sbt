@@ -108,6 +108,12 @@ lazy val commonSettings = Seq(
 
   // query the journal
   , libraryDependencies += "com.typesafe.akka" %% "akka-persistence-query" % "2.5.10"
+
+   , libraryDependencies ++= Seq(
+    "com.typesafe.akka" %% "akka-persistence-cassandra" % "0.83",
+    "com.typesafe.akka" %% "akka-persistence-cassandra-launcher" % "0.83" % Test
+  )
+
   , libraryDependencies += "org.fusesource.leveldbjni" % "leveldbjni-all" % "1.8"
   , PlayKeys.externalizeResources := false
 

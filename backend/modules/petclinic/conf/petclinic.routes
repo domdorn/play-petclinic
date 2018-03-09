@@ -1,3 +1,8 @@
 GET     /                           petclinic.controllers.HomeController.index
-->      /petclinic/                 petclinic.api.Routes
+->      /petclinic/api/                 petclinic.api.Routes
 ->     /v1/posts                    petclinic.posts.Routes
+
+GET         /testdata/pettyes            petclinic.testdata.InsertTestDataController.insertPetTypes()
+GET         /testdata/owners             petclinic.testdata.InsertTestDataController.insertOwners()
+GET         /testdata/pets               petclinic.testdata.InsertTestDataController.insertPets()
+GET         /testdata/specialties        petclinic.testdata.InsertTestDataController.insertSpecialties()

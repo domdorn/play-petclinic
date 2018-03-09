@@ -1,19 +1,31 @@
 GET         /owners                     petclinic.api.owners.getAllOwners.GetAllOwnersController.getOwners()
-POST        /owners                     petclinic.api.owners.createOwner.CreateOwnerController.createOwner()
-GET         /owners/:ownerId            petclinic.api.owners.getOwnerDetail.GetOwnerDetailController.getOwner(ownerId)
+POST        /owners                     petclinic.api.owners.addOwner.AddOwnerController.add()
+GET         /owners/:ownerId            petclinic.api.owners.getOwnerDetail.GetOwnerDetailController.get(ownerId)
 
-POST        /owners/:ownerId/pets       petclinic.api.pets.addPet.AddPetController.addPet(ownerId)
+POST        /owners/:ownerId/pets       petclinic.api.pets.addPet.AddPetController.add(ownerId)
 
-GET         /pets/:ownerId/:petId       petclinic.api.pets.getPetDetail.GetPetDetailController.getPet(ownerId, petId)
-PUT         /pets/:ownerId/:petId       petclinic.api.pets.updatePetDetail.UpdatePetDetailController.updatePetDetails(ownerId, petId)
+GET         /pets/:ownerId/:petId       petclinic.api.pets.getPetDetail.GetPetDetailController.get(ownerId, petId)
+PUT         /pets/:ownerId/:petId       petclinic.api.pets.updatePetDetail.UpdatePetDetailController.update(ownerId, petId)
 
-GET         /pettypes                   petclinic.api.pettype.getAllPetTypes.GetAllPetTypesController.getAllPetTypes()
-POST        /pettypes                   petclinic.api.pettype.addPetType.AddPetTypeController.addPetType()
-GET         /pettypes/:id               petclinic.api.pettype.getPetType.GetPetTypeController.getPetType(id)
-DELETE      /pettypes/:id               petclinic.api.pettype.deletePetType.DeletePetTypeController.deletePetType(id)
-PUT         /pettypes/:id               petclinic.api.pettype.changePetTypeName.ChangePetTypeNameController.changePetTypeName(id)
+GET         /pettypes                   petclinic.api.pettype.getAllPetTypes.GetAllPetTypesController.getAll()
+POST        /pettypes                   petclinic.api.pettype.addPetType.AddPetTypeController.add()
+GET         /pettypes/:id               petclinic.api.pettype.getPetType.GetPetTypeController.get(id)
+DELETE      /pettypes/:id               petclinic.api.pettype.deletePetType.DeletePetTypeController.delete(id)
+PUT         /pettypes/:id               petclinic.api.pettype.changePetTypeName.ChangePetTypeNameController.change(id)
 
 
-GET         /testdata/pettyes    petclinic.api.controllers.InsertTestDataController.insertPetTypes()
-GET         /testdata/owners     petclinic.api.controllers.InsertTestDataController.insertOwners()
-GET         /testdata/pets       petclinic.api.controllers.InsertTestDataController.insertPets()
+GET         /vets                       petclinic.api.vets.getAllVets.GetAllVetsController.getAll()
+POST        /vets                       petclinic.api.vets.addVet.AddVetController.add
+
+
+GET         /specialties                 petclinic.api.specialty.getAllSpecialties.GetAllSpecialtiesController.getAll()
+POST        /specialties                 petclinic.api.specialty.addSpecialty.AddSpecialtyController.add()
+GET         /specialties/:id             petclinic.api.specialty.getSpecialty.GetSpecialtyController.get(id)
+DELETE      /specialties/:id             petclinic.api.specialty.deleteSpecialty.DeleteSpecialtyController.delete(id)
+PUT         /specialties/:id             petclinic.api.specialty.changeSpecialtyName.ChangeSpecialtyNameController.change(id)
+
+
+
+
+
+
