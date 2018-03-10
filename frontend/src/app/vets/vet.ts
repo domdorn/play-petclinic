@@ -22,7 +22,7 @@
 
 import {Specialty} from '../specialties/specialty';
 export interface Vet {
-  id: number;
+  id: string;
   firstName: string;
   lastName: string;
   specialties: Specialty[];

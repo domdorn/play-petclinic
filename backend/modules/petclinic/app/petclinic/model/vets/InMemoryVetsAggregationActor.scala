@@ -8,7 +8,7 @@ import akka.persistence.query.{EventEnvelope, Offset, PersistenceQuery}
 import akka.stream.{ActorMaterializer, KillSwitches, UniqueKillSwitch}
 import akka.stream.scaladsl.{Flow, Keep, Sink}
 import petclinic.model.vets.Protocol.{BasicVet, GetAllVets, GetAllVetsReponse}
-import petclinic.model.vets.Vet.Events.{SpecialtyAddedEvent, SpecialtyRemovedEvent, VetCreatedEvent}
+import petclinic.model.vets.Vet.Events._
 
 import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}
@@ -62,18 +62,20 @@ class InMemoryVetsAggregationActor extends Actor with Stash {
       }
       case SpecialtyAddedEvent(specialtyId) => // ignore
       case SpecialtyRemovedEvent(specialtyId) => // ignore
+      case FirstNameChangedEvent(firstNameIn) => vets = vets.updated(persistenceId, vets(persistenceId).copy(firstName = firstNameIn))
+      case LastNameChangedEvent(lastName) => vets = vets.updated(persistenceId, vets(persistenceId).copy(lastName = lastName))
     }
     case `ImportingDone` => {
       readyToServe = true
       unstashAll()
-      println("InMemoryVetsAggregationActor finished importing")
+//      println("InMemoryVetsAggregationActor finished importing")
       continuousImport = Some(startContinuousImport(readJournal, self, lastOffset))
-      println("Continuous Import started: " + continuousImport)
+//      println("Continuous Import started: " + continuousImport)
     }
     case GetAllVets => {
-      println("request to get all vets received")
+//      println("request to get all vets received")
       if (!readyToServe) {
-        println("stashing it away, as we're not ready to serve")
+//        println("stashing it away, as we're not ready to serve")
         stash()
       } else {
         sender() ! GetAllVetsReponse(vets.values.toSeq)

@@ -61,7 +61,7 @@ class VetsAggregateRoot extends PersistentActor {
         getOrCreateChild(ev.id).forward(cmd)
         }
     }
-    case UpdateVetCommand(id, name) =>
+    case x@UpdateVetCommand(id, firstName, lastName, specialties) => getOrCreateChild(id) forward(x)
   }
 
   def handleQueries = (x: Query) => x match {
@@ -73,7 +73,7 @@ class VetsAggregateRoot extends PersistentActor {
       }
       aggregationActor.foreach(_.forward(GetAllVets))
     }
-    case GetVetDetailsQuery(id) =>
+    case msg@GetVetDetailsQuery(id) => getOrCreateChild(id).forward(msg)
   }
 
   def getOrCreateChild(id: String): ActorRef = context.child(id).getOrElse(context.actorOf(Vet.props(id), id))

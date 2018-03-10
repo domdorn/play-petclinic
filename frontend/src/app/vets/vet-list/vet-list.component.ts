@@ -16,10 +16,6 @@
  *
  */
 
-/**
- * @author Vitaliy Fedoriv
- */
-
 import {Component, OnInit} from '@angular/core';
 import {Vet} from '../vet';
 import {VetService} from '../vet.service';
@@ -48,6 +44,10 @@ export class VetListComponent implements OnInit {
 
   gotoHome() {
     this.router.navigate(['/'])
+  }
+
+  editVet(vet: Vet) {
+    this.router.navigate(['/vets', vet.id, 'edit'])
   }
 
   addVet() {

@@ -15,6 +15,8 @@ PUT         /pettypes/:id               petclinic.api.pettype.changePetTypeName.
 
 
 GET         /vets                       petclinic.api.vets.getAllVets.GetAllVetsController.getAll()
+GET         /vets/:id                   petclinic.api.vets.getVetDetail.GetVetDetailController.get(id: String)
+PUT         /vets/:id                   petclinic.api.vets.changeVet.ChangeVetController.change(id)
 POST        /vets                       petclinic.api.vets.addVet.AddVetController.add
 
 

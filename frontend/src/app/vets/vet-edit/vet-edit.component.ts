@@ -16,11 +16,13 @@
  *
  */
 
-/**
- * @author Vitaliy Fedoriv
- */
-
 import {Component, OnInit} from '@angular/core';
+import {Vet} from "../vet";
+import {VetService} from "../vet.service";
+import {SpecialtyService} from "../../specialties/specialty.service";
+import {ActivatedRoute, Router} from "@angular/router";
+import {Specialty} from "../../specialties/specialty";
+import {Observable} from "rxjs/Observable";
 
 @Component({
   selector: 'app-vet-edit',
@@ -28,11 +30,68 @@ import {Component, OnInit} from '@angular/core';
   styleUrls: ['./vet-edit.component.css']
 })
 export class VetEditComponent implements OnInit {
+  vet: Vet;
+  errorMessage: string;
+  allSpecialties: Observable<Specialty[]>;
+  selectedSpecialties: String[];
 
-  constructor() {
+
+  constructor(private vetService: VetService, private specialtyService: SpecialtyService, private route: ActivatedRoute, private router: Router) {
+    this.vet = <Vet>{};
+    this.vet.specialties = [];
+    this.selectedSpecialties = [];
+    this.allSpecialties = specialtyService.getSpecialties();
   }
 
   ngOnInit() {
+    const vetId = this.route.snapshot.params['id'];
+    this.vetService.getVetById(vetId).subscribe(
+      vet => {
+        this.vet = vet;
+        this.selectedSpecialties = vet.specialties.map(x => x.id.toString())
+      },
+      error => this.errorMessage = <any> error
+    )
   }
+
+  updateSelectedSpecialty(event: Event) {
+    let input = <HTMLInputElement>event.target;
+    let value = input.value.valueOf();
+    if (input.checked) {
+      if (this.selectedSpecialties.indexOf(value) < 0) {
+        this.selectedSpecialties.push(value)
+      }
+    } else {
+      if (this.selectedSpecialties.indexOf(value) >= 0) {
+        this.selectedSpecialties = this.selectedSpecialties.filter((val, idx, obj) => val != value)
+      }
+    }
+  }
+
+  specialtyChecked(specialty_id: string) {
+    return this.vet.specialties.findIndex((v, i, a) => v.id.toString() == specialty_id) >= 0
+  }
+
+  onSubmit(vet: Vet) {
+    vet.specialties = this.selectedSpecialties.map((val, idx, obj) => {
+      let spec = <Specialty>{};
+      spec.id = Number(val.valueOf().toString());
+      return spec;
+    });
+    this.vetService.updateVet(vet.id, vet).subscribe(
+      resp => {
+        this.gotoVetsList();
+      },
+      error => this.errorMessage = <any>error
+    );
+  }
+
+  gotoVetsList() {
+    const r = this.router;
+    setTimeout(function () {
+      r.navigate(['/vets']);
+    }, 1000)
+  }
+
 
 }

@@ -6,9 +6,11 @@ object Protocol {
   sealed trait Query
   sealed trait Response
 
+  sealed trait VetNotFound
+
   // use case 1: get all vets
   case object GetAllVets extends Query
-  case class BasicVet(id: String, fistName: String, lastName: String)
+  case class BasicVet(id: String, firstName: String, lastName: String)
   case class GetAllVetsReponse(vets: Seq[BasicVet]) extends Response
 
 
@@ -19,20 +21,20 @@ object Protocol {
   case object VetCouldNotBeCreatedResponse extends CreateVetResponse
 
   // use case 3: update a vet
-  case class UpdateVetCommand(id: String, name: String) extends Command
+  case class UpdateVetCommand(id: String, firstName: String, lastName: String, specialties: Seq[String]) extends Command
   sealed trait UpdateVetResponse extends Response
   case object VetUpdatedResponse extends UpdateVetResponse
   case object VetUpdateFailedResponse extends UpdateVetResponse
+  case object VetToUpdateNotFound extends UpdateVetResponse with VetNotFound
 
 
   // use case 4: Get Details of a vet
   case class GetVetDetailsQuery(id: String) extends Query
-
   sealed trait GetVetDetailsResponse extends Response
 
-  case class VetDetails(id: String, name: String) extends GetVetDetailsResponse
+  case class VetDetails(id: String, firstName: String, lastName: String, specialties: Seq[String]) extends GetVetDetailsResponse
 
-  case object VetNotFound extends GetVetDetailsResponse
+  case object GetDetailsVetNotFound extends GetVetDetailsResponse with VetNotFound
 
 
 }
