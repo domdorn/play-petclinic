@@ -32,46 +32,78 @@
     </div>
     <div class="row">
       <h3>Use cases to code</h3>
-      <ul>
-        <li><strong>Owner</strong>
-          <ul>
-            <li><input type="checkbox" checked> Create a Owner</li>
-            <li><input type="checkbox"> Change owners details</li>
-            <li><input type="checkbox"> Delete a owner</li>
-            <li><input type="checkbox"> Optimize GetAll</li>
-          </ul>
-        </li>
-        <li><strong>Pets</strong>
-          <ul>
-            <li><input type="checkbox" checked> Create a Pet</li>
-            <li><input type="checkbox" checked> Edit a Pets details</li>
-            <li><input type="checkbox"> Delete a Pet</li>
-          </ul>
-        </li>
-        <li><strong>Visits</strong><ul>
-          <li><input type="checkbox"> Add a Visit</li>
-          <li><input type="checkbox"> Change a Visit</li>
-          <li><input type="checkbox"> Delete a Visit</li>
-          <li><input type="checkbox"> Add Vet to Visit</li>
-        </ul></li>
-        <li><strong>Veterinarians</strong><ul>
-          <li><input type="checkbox"> Add a Vet</li>
-          <li><input type="checkbox"> Change a Vet </li>
-          <li><input type="checkbox"> Fire a Vet </li>
-        </ul></li>
-        <li><strong>Specialties</strong><ul>
-          <li><input type="checkbox">Add a specialty</li>
-          <li><input type="checkbox">Edit a specialty</li>
-          <li><input type="checkbox">Edit a Vets specialties</li>
-          <li><input type="checkbox">Delete a specialty</li>
-        </ul></li>
-        <li><strong>PetTypes</strong><ul>
-          <li><input type="checkbox" checked>Add a PetType</li>
-          <li><input type="checkbox" checked>Change a PetType</li>
-          <li><input type="checkbox" checked>Delete a PetType<ul>
-            <li><input type="checkbox">Make sure in-use PetTypes cannot be deleted</li>
-          </ul></li>
-          <li></li>
-        </ul></li>
-      </ul>
+      <div class="col-md-6">
+        <ul>
+          <li><strong>Owner</strong>
+            <ul>
+              <li><input type="checkbox" checked/> Create a Owner</li>
+              <li><input type="checkbox"/> Change owners details</li>
+              <li><input type="checkbox"/> Delete a owner</li>
+              <li><input type="checkbox" checked/> Optimize GetAll</li>
+            </ul>
+          </li>
+          <li><strong>Pets</strong>
+            <ul>
+              <li><input type="checkbox" checked/> Create a Pet</li>
+              <li><input type="checkbox" checked/> Edit a Pets details</li>
+              <li><input type="checkbox"/> Delete a Pet</li>
+            </ul>
+          </li>
+          <li><strong>Visits</strong>
+            <ul>
+              <li><input type="checkbox"/> Add a Visit</li>
+              <li><input type="checkbox"/> Change a Visit</li>
+              <li><input type="checkbox"/> Delete a Visit</li>
+              <li><input type="checkbox"/> Add Vet to Visit</li>
+            </ul>
+          </li>
+          <li><strong>Veterinarians</strong>
+            <ul>
+              <li><input type="checkbox" checked/> Add a Vet</li>
+              <li><input type="checkbox"/> Change a Vet</li>
+              <li><input type="checkbox"/> Fire a Vet</li>
+            </ul>
+          </li>
+
+        </ul>
+      </div>
+      <div class="col-md-6">
+        <ul>
+          <li><strong>Specialties</strong>
+            <ul>
+              <li><input type="checkbox" checked/>Add a specialty</li>
+              <li><input type="checkbox" checked/>Edit a specialty</li>
+              <li><input type="checkbox"/>Edit a Vets specialties</li>
+              <li><input type="checkbox" checked/>Delete a specialty
+                <ul>
+                  <li><input type="checkbox"/>Make sure in-use Specialties cannot be deleted</li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+          <li><strong>PetTypes</strong>
+            <ul>
+              <li><input type="checkbox" checked/>Add a PetType</li>
+              <li><input type="checkbox" checked/>Change a PetType</li>
+              <li><input type="checkbox" checked/>Delete a PetType
+                <ul>
+                  <li><input type="checkbox"/>Make sure in-use PetTypes cannot be deleted</li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+          <li><strong>Authentication</strong>
+            <ul>
+              <li><input type="checkbox"/>Add login endpoint in auth &micro;Service</li>
+              <li><input type="checkbox"/>Add loginState endpoint in auth &micro;Service</li>
+              <li><input type="checkbox"/>Add logout endpoint in auth &micro;Service</li>
+              <li><input type="checkbox"/>Check for login state before loading main-view</li>
+              <li><input type="checkbox"/>Add tokens to http-requests</li>
+              <li><input type="checkbox"/>Adjust global error handler to handle not-logged-in sessions</li>
+            </ul>
+          </li>
+        </ul>
+      </div>
     </div>
+  </div>
+</div>
