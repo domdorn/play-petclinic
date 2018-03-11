@@ -619,25 +619,20 @@ billingRouter: billing.Routes, petClinicRouter: petclinic.Routes
 
 # Code Structure
  * package per Entity
- * package per Use-Case
+ * package per use-case
  * Input- and Output-Datatypes
-
+  * Tailored for every use-case!
+  
 ![right](assets/play-code-structure.png)
 
 
 ---
 
- 
- * Your Dev-Environment
+# [fit] THANK YOU!
 
+**Blog** [https://dominikdorn.com](https://dominikdorn.com)
+**Twitter** [@domdorn](https://twitter.com/domdorn)
+**Xing** [https://www.xing.com/profile/Dominik_Dorn](https://www.xing.com/profile/Dominik_Dorn)
+**LinkedIn** [https://www.linkedin.com/in/dominik-dorn](https://www.linkedin.com/in/dominik-dorn)
+[Java-Vienna Meetup](http://java.wien) **|** [PlayFramework.Wien Meetup](http://playframework.wien)
 
-
-### Hello World!
-
-```scala
-def myFunc() {
-  System.out.println("das ist ein Test")
-}
-
-
-```
