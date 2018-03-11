@@ -1,7 +1,7 @@
 theme: Sketchnote
 code: Fira Code Medium
-text-strong: Roboto Bold, #EE783F
-footer: **#Voxxed** Days Vienna 2018 **|** 12-13 March 2018 **|** Event Sourced µServices with Akka and Play! **|** Dominik Dorn
+text-strong: Roboto, #EE783F
+footer: **#Voxxed** Days Vienna 2018 **|** 12-13 March 2018 **|** Event Sourced µServices with Akka and Play! **|** Dominik Dorn **@domdorn**
 slidenumbers: true
 
 [.slidenumbers: false]
@@ -27,7 +27,8 @@ slidenumbers: true
  * PlayFramework Integrator
 
 **#Java**, **#Scala**, **#Akka**, **#Spark**
-**#Play**, **#Cassandra**, **#Kafka**
+**#Play**, **#Cassandra**, **#Kafka**,**#Postgres** 
+
 
 ![right](assets/dominik-photo.jpg)
 
@@ -36,48 +37,50 @@ slidenumbers: true
 
 # Overview
  * Intro to Event Sourcing
-   * Events vs. Commands
-   * The Journal, Command + Event-Handlers
- * (Short!) Intro to Actors
- * Actors in Akka
-
----
-
-# Overview
+ * (Short!) Intro to Actors + Actors in Akka
  * Event-Sourcing with Akka-Persistence
-   * Snapshots
-   * Protocols + Compile-Time safety
-
----
-
-# Overview
- * Intro to Command-Query-Responsibility-Segregation
- * Example: Aggregating Data
-   * Ask everyone!
-   * Using Akka-Persistence-Query
-     * Attaching a Tag
-   * Read-Sides w/ SQL
-   * Minimizing delay
-
----
-# Overview
+ * Intro to CQRS
  * Clustering with Akka
- * Code-Base structuring
- * Your Dev-Environment
+ * Code-Base/Dev-Env structuring + tips
 
 ---
 # Intro to Event-Sourcing
-
- * Commands
- * Events
+ * Reasons + Example
+ * Overview
+ * Commands + Events
  * The Journal
- * Command-Handler
- * Event-Handler
+ * Command-Handler + Event-Handler
+
+--- 
+
+# Reasons for Event Sourcing
+
+ * High Performance
+   * Immutable-Events
+   * Append-Only Journal
+   * Increased write-performance
+ * No Object-Relation-Mapping needed
+ * Full-Audit trail (GDPR / DSGVO anyone?)
+
+---
+
+# Examples of Event-Sourcing
+ * Your Bank-/Paypal-Account
+ * Git
+ * Order Tracking (Post, DPD, UPS, etc.)
+ * kind of: Blockchain .. BitCoin anyone? 
+ 
+---
+[.slidenumbers: false]
+
+[.hide-footer]
+
+![inline](assets/event-sourcing_v2.png)
 
 --- 
 # Commands & Events
 
- * Commands - Something the users wants us to do
+ * Commands - Something **the users wants us to do**
 
 ```scala
 case class RegisterUser(email: String, name: String)
@@ -97,18 +100,19 @@ case class NameChanged(newName: String)
 
 * Single Source of Truth
 * Stores the Events
+* Groups Events by Entity-ID
+* Sequence-Number for every Entity-ID
 
 ---
-[.autoscale: false]
 # The (Event-)Journal
 
 looks like this
 
-Entity-ID  |  Seq#  | Type |   Payload (e.g. in JSON)  |
------| ----: | -----------: | ---:
-user-1   |  1     | UserRegistered | `{email:"dominik.dorn@gmail.com", name:"Dominikk Dorn"}`
-user-1   |  2     | NameChanged | `{newName:"Dominik Dorn"}`
-user-2   |  1     | UserRegistered | `{email:"dominik@dominikdorn.com", name:"Dominik Dorn"}`
+|`Entity-ID  Seq#  Type`           | `Payload (e.g. in JSON)` 
+|----------------------------------|:------------------:|
+|`user-1       1  UserRegistered  `| `{email:"dominik.dorn@gmail.com", name:"Dominikk Dorn"}`
+|`user-1       2  NameChanged     `| `{newName:"Dominik Dorn"}`
+|`user-2       3  UserRegistered  `| `{email:"dominik@dominikdorn.com", name:"Dominik Dorn"}`
 
 ---
 
@@ -183,6 +187,16 @@ def receiveEvent = {
 | live in an ActorSystem   | live on Planet Earth |
 
 --- 
+## Creation
+
+|Actors | Humans|
+|-------|-------|
+| system = new ActorSystem() | god.create(Planet("Earth"))
+| system.actorOf(Props(new Female("Eve"))) | god.create(Female("Eve")) |
+| `context.childOf(Props(new Male())` | eve.fork() // +adam |
+
+--- 
+
 ## Getting information
 
 about the current state of the soccer game
@@ -191,14 +205,6 @@ about the current state of the soccer game
 |-------|-------|
 | gameActor.tell(GetCurrentScore) | shout("Hey Steve, what's the score?") |
 | sender().tell(Score(3,2)) | shout("Its 3 to 2 for Manchester!") |
---- 
-## Creation
-
-|Actors | Humans|
-|-------|-------|
-| actorSystem.actorOf(Props(new Female("Adam"))) | god.create(Female("Eve")) |
-| `context.childOf(Props(new Male())` | eve.forkWith(Adam) |
-
 --- 
 # Actors in Akka
 
@@ -219,7 +225,8 @@ adam ! GiveName("Adam")
 # Persistent-Actors
 
 ```scala
-class User(id: String, @Named("email") email: ActorRef) extends PersistentActor {
+class User(id: String, @Named("email") email: ActorRef)
+  extends PersistentActor {
     // entity-id in the journal
     val persistenceId: String = s"user-$id"
     
@@ -240,8 +247,9 @@ def receiveCommand = {
 //     ^--- persist stores into the journal
       receiveRecover.apply(ev)
 //      ^--- apply the event to the event handler      
-      email ! EmailProtocol.SendWelcomeMail(email, name)
-      sender() ! akka.Done // tell that we're done
+      email ! Email.Commands.SendWelcomeMail(email, name)
+       // tell that we're done
+      sender() ! UserRegisteredAnswer(email, name)
     }
 }
 ```
@@ -312,6 +320,20 @@ def receiveRecover = {
 }
 
 ```
+
+--- 
+# Keep memory low, set a ReceiveTimeout
+
+```scala
+class SomeActor extends Actor {
+  context.setReceiveTimeout(3 seconds)
+  def receive = {
+   // ....
+   case ReceiveTimeout => context.stop(self)
+  }
+}
+```
+
 ---
 
 # Best Practices: Protocols
@@ -360,20 +382,17 @@ object User {
 
 
 ---
-# Best Practices: Protocols - Commands
+# Protocols: Commands + Responses
 
 ```scala
 object User {   ...
   object Commands {
     sealed trait Command
     case class CreateUserCommand(email: String, name: String) extends Command
+  
     sealed trait CreateUserResponse
     case class UserCreatedResponse(email: String) extends CreateUserResponse
     case object UserCreationFailedResponse extends CreateUserResponse
-    
-    case class ChangeNameCommand(email: String, name: String) extends Command
-    sealed trait ChangeNameResponse
-    case object NamedChangeResponse extends ChangeNameResponse
   }
 ```
 ---
@@ -381,7 +400,7 @@ object User {   ...
 
 [.hide-footer]
 
-# Best Practices: Protocols - Queries
+# Protocols: Queries + Responses
 
 ```scala
 object User {   ... 
@@ -401,12 +420,13 @@ object User {   ...
 ```
 
 ---
-
+[.autoscale: false]
 # Command Query Responsibility Segregation (CQRS)
 
 * Split Actions (Commands) and Questions (Queries)
-* Divide the code-base according to these
+* Divide the code-base according to these separations
 * Create optimized datastores (read-sides) for the various queries
+* If necessary, create+scale read- + write-µServices
 
 ---
 
@@ -477,7 +497,7 @@ class GetAllNamesActor(...,answerTo: ActorRef,...) {
 ## Process the events in the actor
 
 ```scala
-class GetAllNamesActor(...,answerTo: ActorRef,...) {  
+class InMemoryGetAllNamesActor(...,answerTo: ActorRef,...) {  
   ...
   def receive = {
     case Done => answerTo ! GetAllNamesResponse(data.values)
@@ -489,19 +509,125 @@ class GetAllNamesActor(...,answerTo: ActorRef,...) {
 }
 ```
 
+----
+
+## Create a SQL read-side
+
+```scala
+class UserSQLReadSideEventHandler() extends Actor {  
+  // ... like in GetAllNamesActor with Akka-Streams
+  def receive = {
+    case EventEnvelope(_, _, _, ev) => ev match {
+      case UserRegistered(email, name) =>  
+        SQL(s"INSERT INTO users VALUES (...)")
+      case NameChanged(email, newName) =>  
+        SQL(s"UPDATE users SET name = ${newName} where email = ${email}")
+    }
+  }
+}
+```
+
 ---
 
- * Example: Aggregating Data
-   * Ask everyone!
-   * Using Akka-Persistence-Query
-     * Attaching a Tag
-   * Read-Sides w/ SQL
-   * Minimizing delay
+## Akka-Streams Performance/low latency Optimizations
+
+* Tag your Events using a WriteEventAdapter, then read with readJournal.eventsByTag()
+* Publish Events in the CommandHandler to the Event-Stream, subscribe in the EventHandler(s)
 
 ---
-# Overview
- * Clustering with Akka
- * Code-Base structuring
+
+# Clustering with Akka
+
+* Use the akka-cluster module
+* Use cluster sharding to place aggregates on nodes
+* Don't distribute the contents of aggregates!
+* Use cluster singletons for Read-Side Event-Handlers
+* \#Shardregions: ~ 10 x #cluster-nodes
+
+---
+# Clustering with Akka
+
+```scala
+val userRegion: ActorRef = ClusterSharding(system).start (
+  typeName = "User",
+  entityProps = Props[User],
+  settings = ClusterShardingSettings(system),
+  // method how to extract the entity id of a message
+  extractEntityId = extractEntityId,
+  // how to derive the correct shard of a entity 
+  extractShardId = extractShardId
+  )
+```
+
+---
+# PersistenceId + Forwarding [^1]
+
+```scala
+
+class UserManager extends PersistentActor {
+  val id = self.path.name // path generated by ClusterSharding
+  override def persistenceId = s"user-$id"
+  
+  val userRegion = ClusterSharding(system).start (...)
+  def receive = {
+    // forward messages to the correct actors
+    case x : ChangeUserName => userRegion.forward(x) 
+    // ... 
+  }
+  // ...
+}
+
+```
+
+[^1]: More Details in "Mastering Akka, 1st Edition, 2016, Pakt Publishing" (Ebook currently 10 USD!)
+
+---
+[.slidenumbers: false]
+
+[.hide-footer] 
+
+# Efficient µServices-Code-Base structuring
+
+ * project (+docker image) per bounded-context
+   * e.g. authentication, user-management, billing
+ * Root-Project with VirtualHostRequestHandler
+
+
+![right](assets/play-project-structure.png)
+
+---
+# Virtual-Host Request-Handler[^2]
+
+```scala
+class RequestHandler @Inject()(.... authRouter: auth.Routes, 
+billingRouter: billing.Routes, petClinicRouter: petclinic.Routes
+  ) extends DefaultHttpRequestHandler(Router.empty, ...) {
+
+  override def routeRequest(request: RequestHeader): Option[Handler] = {
+    request.host.split('.').headOption match {
+      case Some("auth") => authRouter.routes.lift(request)
+      case Some("billing") => billingRouter.routes.lift(request)
+      case Some("petclinic") => petClinicRouter.routes.lift(request)
+      case _ => super.routeRequest(request)
+    }
+
+```
+[^2]: see https://www.playframework.com/documentation/2.6.x/ScalaHttpRequestHandlers
+
+---
+[.hide-footer]
+
+# Code Structure
+ * package per Entity
+ * package per Use-Case
+ * Input- and Output-Datatypes
+
+![right](assets/play-code-structure.png)
+
+
+---
+
+ 
  * Your Dev-Environment
 
 
