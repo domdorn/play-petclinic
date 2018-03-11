@@ -4,7 +4,10 @@ import java.util.UUID
 
 import akka.actor.{ActorRef, Props, Terminated}
 import akka.persistence.PersistentActor
+import javax.inject.Inject
 import petclinic.model.vets.Protocol._
+import petclinic.model.vets.getAllAggregation.{AskAllAggregationActor, InMemoryVetsAggregationActorWithReadJournal}
+import play.api.Configuration
 
 
 object VetsAggregateRoot {
@@ -23,7 +26,7 @@ object VetsAggregateRoot {
 
 }
 
-class VetsAggregateRoot extends PersistentActor {
+class VetsAggregateRoot @Inject() (configuration: Configuration) extends PersistentActor {
 
   import VetsAggregateRoot.Events._
   import VetsAggregateRoot._
@@ -67,7 +70,7 @@ class VetsAggregateRoot extends PersistentActor {
   def handleQueries = (x: Query) => x match {
     case GetAllVets => {
       if (aggregationActor.isEmpty) { // lazy initialize
-        val ref = context.actorOf(Props(new InMemoryVetsAggregationActor()))
+        val ref = createAggregationActor()
         context.watch(ref)
         aggregationActor = Some(ref)
       }
@@ -77,6 +80,20 @@ class VetsAggregateRoot extends PersistentActor {
   }
 
   def getOrCreateChild(id: String): ActorRef = context.child(id).getOrElse(context.actorOf(Vet.props(id), id))
+
+  def createAggregationActor() : ActorRef = {
+    val vetsAggregate: String = configuration.get[String]("com.dominikdorn.petclinic.vets.aggregate")
+
+    vetsAggregate match {
+      case "AskAll" =>  context.actorOf(AskAllAggregationActor.props(vets.map(vad => vad.id), self))
+      case "AskAllFuture" => ???
+      case "InMemoryWithReadJournalUpdate" => context.actorOf(Props(new InMemoryVetsAggregationActorWithReadJournal()))
+      case "InMemoryWithEventsUpdate" => ???
+      case _ => throw new IllegalStateException("Unmatched aggregation actor type")
+    }
+
+  }
+
 }
 
 

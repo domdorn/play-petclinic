@@ -1,20 +1,20 @@
-package petclinic.model.vets
+package petclinic.model.vets.getAllAggregation
 
 import java.time.Instant
 
-import akka.actor.{Actor, ActorRef, ActorSystem, Cancellable, ReceiveTimeout, Stash}
+import akka.actor.{Actor, ActorRef, ActorSystem, ReceiveTimeout, Stash}
 import akka.persistence.cassandra.query.scaladsl.CassandraReadJournal
-import akka.persistence.query.{EventEnvelope, Offset, PersistenceQuery}
-import akka.stream.{ActorMaterializer, KillSwitches, UniqueKillSwitch}
+import akka.persistence.query.{EventEnvelope, PersistenceQuery}
 import akka.stream.scaladsl.{Flow, Keep, Sink}
+import akka.stream.{ActorMaterializer, KillSwitches, UniqueKillSwitch}
 import petclinic.model.vets.Protocol.{BasicVet, GetAllVets, GetAllVetsReponse}
+import petclinic.model.vets.Vet
 import petclinic.model.vets.Vet.Events._
 
 import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}
 
-object InMemoryVetsAggregationActor {
-  val SELECT: Sink[String, Future[Seq[String]]] = Sink.seq[String]
+object InMemoryVetsAggregationActorWithReadJournal {
   def FROM_INITIAL(readJournal: CassandraReadJournal) = readJournal.currentPersistenceIds()
   def FROM_CONTINOUSLY(readJournal: CassandraReadJournal) = readJournal.persistenceIds()
   val WHERE = Flow[String].filter(s => s.startsWith("vet-"))
@@ -32,10 +32,11 @@ object InMemoryVetsAggregationActor {
 
 }
 
-class InMemoryVetsAggregationActor extends Actor with Stash {
+class InMemoryVetsAggregationActorWithReadJournal extends Actor with Stash {
+  println("creating InMemoryVetsAggregationActorWithReadJournal")
   implicit val ec: ExecutionContext = context.system.dispatcher
   implicit val actorSystem: ActorSystem = context.system
-  import InMemoryVetsAggregationActor._
+  import InMemoryVetsAggregationActorWithReadJournal._
 
   val readJournal: CassandraReadJournal = PersistenceQuery(context.system).readJournalFor[CassandraReadJournal](CassandraReadJournal.Identifier)
 

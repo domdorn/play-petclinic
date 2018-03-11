@@ -2,7 +2,7 @@ package petclinic.model.vets
 
 import java.time.Instant
 
-import akka.actor.Props
+import akka.actor.{Props, ReceiveTimeout}
 import akka.persistence.PersistentActor
 import petclinic.model.vets.Protocol._
 
@@ -17,6 +17,9 @@ object Vet {
 
     case class FirstNameChangedEvent(firstName: String) extends Event
     case class LastNameChangedEvent(lastName: String) extends Event
+
+    // event that gets distributed to the event-bus
+    case class VetUpdate(id: String, events: Seq[Event])
   }
 
   case class VetData(
@@ -33,9 +36,11 @@ class Vet(id: String) extends PersistentActor {
 
   import Vet.Events._
   import Vet._
+  import scala.concurrent.duration._
 
   override def persistenceId: String = s"vet-$id"
 
+  context.setReceiveTimeout(3 seconds)
 
   var state: Option[VetData] = None
 
@@ -58,6 +63,7 @@ class Vet(id: String) extends PersistentActor {
         receiveRecover.apply(ev)
         sender() ! VetCreatedResponse(ev.id, ev.firstName, ev.lastName, Nil)
         println("Created " + ev + " in Vet at " + Instant.now())
+        context.system.eventStream.publish(VetUpdate(ev.id, Seq(ev)))
     }
     case x: GetVetDetailsQuery =>
       state match {
@@ -84,7 +90,9 @@ class Vet(id: String) extends PersistentActor {
         persistAll[Event](eventsToCreate){ event =>
           receiveRecover.apply(event)
         }
+        context.system.eventStream.publish(VetUpdate(id, eventsToCreate))
         sender() ! VetUpdatedResponse
     }
+    case ReceiveTimeout => context.stop(self)
   }
 }
