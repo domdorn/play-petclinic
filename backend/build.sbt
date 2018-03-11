@@ -43,6 +43,11 @@ lazy val common = (project in file("modules/common"))
   .enablePlugins(PlayScala)
   .settings(commonSettings: _*)
 
+lazy val spa = (project in file("modules/frontend"))
+    .settings(name := "frontend")
+    .enablePlugins(PlayScala)
+    .settings(commonSettings: _*)
+
 lazy val petclinic = (project in file("modules/petclinic"))
     .settings(name := "petclinic")
     .enablePlugins(PlayScala)
