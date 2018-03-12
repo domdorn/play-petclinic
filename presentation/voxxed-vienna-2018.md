@@ -625,6 +625,10 @@ billingRouter: billing.Routes, petClinicRouter: petclinic.Routes
   
 ![right](assets/play-code-structure.png)
 
+---
+
+![fit](assets/quote-venkat.png)
+
 
 ---
 
