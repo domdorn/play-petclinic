@@ -244,7 +244,7 @@ def receiveCommand = {
   case RegisterUser(email, name) => 
     // email constraints already checked before
     persist(UserRegistered(email, name)) { ev => 
-//     ^--- persist stores into the journal
+//     ^--- persist stores event into the journal
       receiveRecover.apply(ev)
 //      ^--- apply the event to the event handler      
       email ! Email.Commands.SendWelcomeMail(email, name)
