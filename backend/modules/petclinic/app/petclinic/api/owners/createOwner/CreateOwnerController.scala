@@ -7,12 +7,12 @@ import play.api.mvc._
 
 import scala.concurrent.ExecutionContext
 
-class AddOwnerController @Inject()(service: CreateOwnerService,
-                                   cc: ControllerComponents, actorSystem: ActorSystem,
-                                   @Named(petclinic.api.Constants.OWNER_AGGREGATE_ACTOR_NAME) owner: ActorRef) extends AbstractController(cc) {
+class CreateOwnerController @Inject()(service: CreateOwnerService,
+                                      cc: ControllerComponents, actorSystem: ActorSystem,
+                                      @Named(petclinic.api.Constants.OWNER_AGGREGATE_ACTOR_NAME) owner: ActorRef) extends AbstractController(cc) {
   implicit val ec: ExecutionContext = cc.executionContext
 
-  def add(): Action[OwnerCreate] = cc.actionBuilder.async(cc.parsers.json[OwnerCreate]) { request =>
+  def create(): Action[OwnerCreate] = cc.actionBuilder.async(cc.parsers.json[OwnerCreate]) { request =>
     val owner = request.body
 
     service
